@@ -1,4 +1,3 @@
-// backend/resetAdmin.js — one-off: deletes existing admin, then run /api/auth/seed again
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import Admin from "./models/Admin.js";
