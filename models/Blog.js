@@ -19,6 +19,17 @@ const blogSchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
     title: { type: String, required: true, trim: true },
     excerpt: { type: String, required: true },
+
+    // Which public blog vertical this post belongs to — drives which
+    // section of the Blog screen (KEC Insights vs The BioEnergy Brief)
+    // the post appears under, and which admin filter surfaces it.
+    category: {
+      type: String,
+      enum: ["kec-insights", "bioenergy-brief"],
+      required: true,
+      default: "bioenergy-brief",
+    },
+
     tag: { type: String, required: true },
     tagStyle: {
       bg: { type: String, default: "#EAF6EF" },
@@ -71,6 +82,7 @@ const blogSchema = new mongoose.Schema(
 // slug index is auto-created by unique:true above — do NOT add schema.index({ slug: 1 })
 blogSchema.index({ status: 1, createdAt: -1 });
 blogSchema.index({ tag: 1 });
+blogSchema.index({ category: 1 });
 blogSchema.index({ featured: 1 });
 
 export default mongoose.model("Blog", blogSchema);

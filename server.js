@@ -1,8 +1,15 @@
+// MUST be the first import — ES module imports execute top-to-bottom before
+// any other code runs, so uploadController.js's top-level cloudinary.config()
+// call (triggered by importing uploadRoutes below) was reading process.env
+// BEFORE dotenv.config() had populated it. That's why CLOUDINARY_* looked
+// "missing" even with correct values in .env. Loading dotenv/config as the
+// very first import guarantees env vars exist before any other file loads.
+import "dotenv/config";
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -10,8 +17,6 @@ import blogRoutes from "./routes/blogRoutes.js";
 import caseStudyRoutes from "./routes/caseStudyRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import { apiLimiter } from "./middleware/rateLimiter.js";
-
-dotenv.config();
 
 const app = express();
 app.set("trust proxy", 1);

@@ -8,10 +8,11 @@ const makeSlug = (title) =>
   slugify(title, { lower: true, strict: true, trim: true });
 
 const buildQuery = (queryParams) => {
-  const { status, tag, featured, search } = queryParams;
+  const { status, tag, category, featured, search } = queryParams;
   const filter = {};
   if (status) filter.status = status;
   if (tag) filter.tag = tag;
+  if (category) filter.category = category;
   if (featured !== undefined) filter.featured = featured === "true";
   if (search) filter.$or = [
     { title: { $regex: search, $options: "i" } },
@@ -30,7 +31,7 @@ export const getBlogs = asyncHandler(async (req, res) => {
 
   const [blogs, total] = await Promise.all([
     Blog.find(filter)
-      .select("slug title tag date status featured readTime author views createdAt updatedAt img heroImg excerpt seo")
+      .select("slug title tag category date status featured readTime author views createdAt updatedAt img heroImg excerpt seo")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -47,8 +48,13 @@ export const getBlogs = asyncHandler(async (req, res) => {
 
 // ── GET /api/blogs/published ─ public listing
 export const getPublishedBlogs = asyncHandler(async (req, res) => {
-  const blogs = await Blog.find({ status: "published" })
-    .select("slug title tag date featured readTime author img excerpt tagStyle heroImg heroGradient tags highlights related")
+  const filter = { status: "published" };
+  // Optional ?category=kec-insights | bioenergy-brief — lets the public
+  // Blog screen ask for just one vertical's posts when needed.
+  if (req.query.category) filter.category = req.query.category;
+
+  const blogs = await Blog.find(filter)
+    .select("slug title tag category date featured readTime author img excerpt tagStyle heroImg heroGradient tags highlights related")
     .sort({ featured: -1, createdAt: -1 })
     .lean();
 
@@ -63,15 +69,16 @@ export const getAllSlugs = asyncHandler(async (req, res) => {
 
 // ── GET /api/blogs/stats ─ dashboard stats
 export const getBlogStats = asyncHandler(async (req, res) => {
-  const [total, published, drafts, featured, byTag] = await Promise.all([
+  const [total, published, drafts, featured, byTag, byCategory] = await Promise.all([
     Blog.countDocuments(),
     Blog.countDocuments({ status: "published" }),
     Blog.countDocuments({ status: "draft" }),
     Blog.countDocuments({ featured: true }),
     Blog.aggregate([{ $group: { _id: "$tag", count: { $sum: 1 } } }, { $sort: { count: -1 } }]),
+    Blog.aggregate([{ $group: { _id: "$category", count: { $sum: 1 } } }, { $sort: { count: -1 } }]),
   ]);
 
-  res.json({ success: true, data: { total, published, drafts, featured, byTag } });
+  res.json({ success: true, data: { total, published, drafts, featured, byTag, byCategory } });
 });
 
 // ── GET /api/blogs/:id ─ single blog (admin, by id or slug)
