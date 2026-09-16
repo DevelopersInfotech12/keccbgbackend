@@ -16,6 +16,8 @@ import authRoutes from "./routes/authRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import caseStudyRoutes from "./routes/caseStudyRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import cityParkRoutes from "./routes/cityParkRoutes.js";
+import infographicRoutes from "./routes/infographicRoutes.js";
 import { apiLimiter } from "./middleware/rateLimiter.js";
 
 const app = express();
@@ -64,6 +66,8 @@ app.get("/api/health", healthCheck);
 app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/case-studies", caseStudyRoutes);
+app.use("/api/city-parks", cityParkRoutes);
+app.use("/api/infographics", infographicRoutes);
 app.use("/api/upload", uploadRoutes);
 
 // Error handlers
