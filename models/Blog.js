@@ -21,11 +21,11 @@ const blogSchema = new mongoose.Schema(
     excerpt: { type: String, required: true },
 
     // Which public blog vertical this post belongs to — drives which
-    // section of the Blog screen (KEC Insights vs The BioEnergy Brief)
+    // section of the Blog screen (KEC Insights vs The BioEnergy Brief vs Blog)
     // the post appears under, and which admin filter surfaces it.
     category: {
       type: String,
-      enum: ["kec-insights", "bioenergy-brief"],
+      enum: ["kec-insights", "bioenergy-brief", "blog"],
       required: true,
       default: "bioenergy-brief",
     },

@@ -14,6 +14,7 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 import cityParkRoutes from "./routes/cityParkRoutes.js";
 import infographicRoutes from "./routes/infographicRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 import { apiLimiter } from "./middleware/rateLimiter.js";
 
 const app = express();
@@ -81,6 +82,7 @@ app.use("/api/city-parks", cityParkRoutes);
 app.use("/api/infographics", infographicRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/gallery", galleryRoutes);
+app.use("/api/categories", categoryRoutes);
 
 // Error handlers
 app.use(notFound);
